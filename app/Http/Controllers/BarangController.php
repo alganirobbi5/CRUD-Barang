@@ -7,11 +7,23 @@ use Illuminate\Http\Request;
 
 class BarangController extends Controller
 {
-    public function index()
-    {
-        $barangs = Barang::latest()->get();
-        return view('barang.index', compact('barangs'));
+    public function index(Request $request)
+{
+    $keyword = $request->keyword;
+
+    $query = Barang::query();
+
+    if ($keyword) {
+        $query->where('nama_barang', 'like', "%{$keyword}%");
     }
+
+    $barangs = $query
+                ->latest()
+                ->paginate(10)
+                ->withQueryString();
+
+    return view('barang.index', compact('barangs'));
+}
 
     public function create()
     {
